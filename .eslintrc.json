@@ -1,0 +1,10 @@
+{
+  "extends": ["airbnb-typescript", "prettier", "prettier/@typescript-eslint"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "import/prefer-default-export": "off",
+    "no-plusplus": "off",
+    "no-param-reassign": "off"
+  }
+}
