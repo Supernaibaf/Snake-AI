@@ -1,13 +1,13 @@
 import { Game } from './game/game';
-import { Direction } from './game/direction';
+import { SnakeAI } from './ai/snake-ai';
 
 (function initialize() {
   const gameWidth = 32;
   const gameHeight = 18;
   const scaleFactor = 50;
   const foodColor = '#ff0000';
-  const speed = 100;
   let game: Game;
+  let snakeAI: SnakeAI;
   let canvas: CanvasRenderingContext2D;
 
   function initializeGameContainer(): CanvasRenderingContext2D {
@@ -38,44 +38,28 @@ import { Direction } from './game/direction';
 
   function startGame() {
     const gameInterval = window.setInterval(() => {
+      const nextDirection = snakeAI.getNextDirectionChange();
+      if (nextDirection.newDirection !== undefined) {
+        game.direction = nextDirection.newDirection;
+      }
       const tickResult = game.tick();
       if (tickResult.ruleViolation) {
         window.clearInterval(gameInterval);
       } else if (tickResult.noSpaceForFood) {
         window.clearInterval(gameInterval);
       } else {
+        snakeAI.gameChanged(tickResult);
         canvas.clearRect(0, 0, gameWidth * scaleFactor, gameHeight * scaleFactor);
         drawGame();
       }
-    }, speed);
+    }, 10);
   }
 
   window.addEventListener('load', () => {
     canvas = initializeGameContainer();
     game = new Game(gameWidth, gameHeight);
+    snakeAI = new SnakeAI(game);
     drawGame();
     startGame();
-  });
-
-  window.addEventListener('keydown', e => {
-    if (!game) {
-      return;
-    }
-    switch (e.keyCode) {
-      case 37:
-        game.direction = Direction.Left;
-        break;
-      case 38:
-        game.direction = Direction.Up;
-        break;
-      case 39:
-        game.direction = Direction.Right;
-        break;
-      case 40:
-        game.direction = Direction.Down;
-        break;
-      default:
-        break;
-    }
   });
 })();
